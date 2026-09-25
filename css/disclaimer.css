@@ -7,7 +7,7 @@
   background: var(--bg);
 }
 
-/* Заголовок: единственный источник света */
+/* Заголовок */
 .dc-head {
   position: relative;
   z-index: 4;
@@ -64,36 +64,55 @@
   opacity: .8;
 }
 
-/* Лучи от заголовка */
-.dc-rays {
+/* Свет из окна сквозь жалюзи: тёплое пятно поверх текста, полосы жалюзи
+   и тёмные перекладины рамы. Слабое, чтобы текст читался. */
+.dc-blinds {
+  --pitch: 5rem;
   position: absolute;
-  left: 50%;
-  top: 0;
+  inset: 0 22% 0 0;
   z-index: 3;
-  width: min(150vw, 1600px);
-  height: 100%;
-  transform: translateX(-50%);
-  transform-origin: 50% 0;
+  overflow: hidden;
   pointer-events: none;
-  mix-blend-mode: screen;
   opacity: 0;
-  background: repeating-conic-gradient(
-    from 150deg at 50% 0%,
-    rgba(175, 212, 255, .16) 0deg 2deg,
-    transparent 2deg 5.5deg
-  );
+  filter: blur(2.5px);
+  /* перекладины рамы, мягкий правый край и низ */
   -webkit-mask-image:
-    conic-gradient(from 0deg at 50% 0%, transparent 0 128deg, #000 152deg 208deg, transparent 232deg 360deg),
-    radial-gradient(ellipse 80% 100% at 50% 0%, #000 0%, rgba(0, 0, 0, .35) 55%, transparent 100%);
+    linear-gradient(to right, #000 0 24%, transparent 24% 27%, #000 27% 62%, transparent 62% 65%, #000 65% 100%),
+    linear-gradient(to right, #000 0, #000 55%, transparent 100%),
+    linear-gradient(to bottom, #000 0, #000 55%, transparent 100%);
   -webkit-mask-composite: source-in;
   mask-image:
-    conic-gradient(from 0deg at 50% 0%, transparent 0 128deg, #000 152deg 208deg, transparent 232deg 360deg),
-    radial-gradient(ellipse 80% 100% at 50% 0%, #000 0%, rgba(0, 0, 0, .35) 55%, transparent 100%);
+    linear-gradient(to right, #000 0 24%, transparent 24% 27%, #000 27% 62%, transparent 62% 65%, #000 65% 100%),
+    linear-gradient(to right, #000 0, #000 55%, transparent 100%),
+    linear-gradient(to bottom, #000 0, #000 55%, transparent 100%);
   mask-composite: intersect;
 }
-.dc[data-state='lit'] .dc-rays {
-  animation: dc-rays-in 2.2s ease-out both, dc-sway 11s ease-in-out 2.2s infinite alternate;
+.dc-blinds::before {
+  content: '';
+  position: absolute;
+  inset: -30% -10%;
+  transform: skewY(-12deg);
+  mix-blend-mode: screen;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 226, 176, .26) 0 calc(var(--pitch) * .64),
+    transparent calc(var(--pitch) * .64) var(--pitch)
+  );
 }
+.dc-blinds::after {
+  content: '';
+  position: absolute;
+  inset: -30% -10%;
+  transform: skewY(-12deg);
+  mix-blend-mode: screen;
+  filter: blur(26px);
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 214, 150, .2) 0 calc(var(--pitch) * .7),
+    transparent calc(var(--pitch) * .7) var(--pitch)
+  );
+}
+.dc[data-state='lit'] .dc-blinds { animation: dc-blinds-in 2.4s ease-out both, dc-blinds-breathe 9s ease-in-out 2.4s infinite alternate; }
 
 /* Текст: с прокруткой, верх и низ гаснут */
 .dc-scroll {
@@ -272,13 +291,13 @@
   50% { clip-path: inset(15% 0 55% 0); transform: translate(-5px, 0); }
   100% { clip-path: inset(40% 0 30% 0); transform: translate(3px, 0); }
 }
-@keyframes dc-rays-in {
+@keyframes dc-blinds-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-@keyframes dc-sway {
-  from { transform: translateX(-50%) rotate(-1.6deg); }
-  to { transform: translateX(-50%) rotate(1.6deg); }
+@keyframes dc-blinds-breathe {
+  from { opacity: 1; }
+  to { opacity: .8; }
 }
 @keyframes dc-in {
   from { opacity: 0; filter: blur(6px) brightness(2.2); transform: translateY(6px); }
@@ -305,7 +324,7 @@
   .dc-title.is-glitch::before,
   .dc-title.is-glitch::after { animation: none; }
   .dc-title.is-glitch::before, .dc-title.is-glitch::after { opacity: 0; }
-  .dc[data-state='lit'] .dc-rays { animation: none; opacity: 1; }
+  .dc[data-state='lit'] .dc-blinds { animation: none; opacity: 1; }
   .dc-line, .dc[data-state='lit'] .dc-line { opacity: 1; animation: none; }
   .dc-hint span { animation: none; }
 }

@@ -15,7 +15,7 @@ function template(t) {
   const remember = t.remember.map((s) => `<p class="dc-line">${s}</p>`).join('');
   return `
     <section class="dc" data-state="dark" data-hint="off">
-      <div class="dc-rays" aria-hidden="true"></div>
+      <div class="dc-blinds" aria-hidden="true"></div>
       <header class="dc-head">
         <h1 class="dc-title"></h1>
         <p class="dc-sub"></p>
