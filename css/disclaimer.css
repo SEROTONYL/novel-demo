@@ -75,6 +75,8 @@
 .dc-blinds {
   --pitch: 5rem;
   --open: 1;
+  --light: 205, 228, 255;
+  --bloom: 170, 205, 255;
   position: absolute;
   inset: 0 22% 0 0;
   z-index: 3;
@@ -102,7 +104,7 @@
   mix-blend-mode: screen;
   background: repeating-linear-gradient(
     to bottom,
-    rgba(255, 226, 176, .26) 0 calc(var(--pitch) * .64 * var(--open)),
+    rgba(var(--light), .26) 0 calc(var(--pitch) * .64 * var(--open)),
     transparent calc(var(--pitch) * .64 * var(--open)) var(--pitch)
   );
 }
@@ -115,7 +117,7 @@
   filter: blur(26px);
   background: repeating-linear-gradient(
     to bottom,
-    rgba(255, 214, 150, .2) 0 calc(var(--pitch) * .7 * var(--open)),
+    rgba(var(--bloom), .2) 0 calc(var(--pitch) * .7 * var(--open)),
     transparent calc(var(--pitch) * .7 * var(--open)) var(--pitch)
   );
 }
