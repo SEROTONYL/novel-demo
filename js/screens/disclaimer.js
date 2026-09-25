@@ -2,8 +2,8 @@
 import { saveConsent } from '../storage.js';
 
 // Должны совпадать с анимацией .dc-line в css/disclaimer.css
-const REVEAL_BASE = 300;
-const REVEAL_STEP = 280;
+const REVEAL_BASE = 500;
+const REVEAL_STEP = 240;
 const REVEAL_DUR = 900;
 
 const DARK_MS = 1400;

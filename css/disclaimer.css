@@ -1,3 +1,9 @@
+@property --open {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+
 .dc {
   position: relative;
   height: 100%;
@@ -68,6 +74,7 @@
    и тёмные перекладины рамы. Слабое, чтобы текст читался. */
 .dc-blinds {
   --pitch: 5rem;
+  --open: 1;
   position: absolute;
   inset: 0 22% 0 0;
   z-index: 3;
@@ -95,8 +102,8 @@
   mix-blend-mode: screen;
   background: repeating-linear-gradient(
     to bottom,
-    rgba(255, 226, 176, .26) 0 calc(var(--pitch) * .64),
-    transparent calc(var(--pitch) * .64) var(--pitch)
+    rgba(255, 226, 176, .26) 0 calc(var(--pitch) * .64 * var(--open)),
+    transparent calc(var(--pitch) * .64 * var(--open)) var(--pitch)
   );
 }
 .dc-blinds::after {
@@ -108,11 +115,11 @@
   filter: blur(26px);
   background: repeating-linear-gradient(
     to bottom,
-    rgba(255, 214, 150, .2) 0 calc(var(--pitch) * .7),
-    transparent calc(var(--pitch) * .7) var(--pitch)
+    rgba(255, 214, 150, .2) 0 calc(var(--pitch) * .7 * var(--open)),
+    transparent calc(var(--pitch) * .7 * var(--open)) var(--pitch)
   );
 }
-.dc[data-state='lit'] .dc-blinds { animation: dc-blinds-in 2.4s ease-out both, dc-blinds-breathe 9s ease-in-out 2.4s infinite alternate; }
+.dc[data-state='lit'] .dc-blinds { animation: dc-blinds-open 2.8s cubic-bezier(.35, .1, .25, 1) both, dc-blinds-breathe 9s ease-in-out 2.8s infinite alternate; }
 
 /* Текст: с прокруткой, верх и низ гаснут */
 .dc-scroll {
@@ -259,11 +266,11 @@
 .dc-hint span { display: inline-block; animation: dc-bob 1.6s ease-in-out infinite; }
 .dc[data-hint='on'] .dc-hint { opacity: .9; }
 
-/* Появление строк: свет добирается вниз */
+/* Появление строк: жалюзи раскрываются, свет добирается вниз */
 .dc-line { opacity: 0; }
 .dc[data-state='lit'] .dc-line {
   animation: dc-in .9s ease-out both;
-  animation-delay: calc(var(--i) * .28s + .3s);
+  animation-delay: calc(var(--i) * .24s + .5s);
 }
 
 @keyframes dc-flicker {
@@ -291,9 +298,10 @@
   50% { clip-path: inset(15% 0 55% 0); transform: translate(-5px, 0); }
   100% { clip-path: inset(40% 0 30% 0); transform: translate(3px, 0); }
 }
-@keyframes dc-blinds-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@keyframes dc-blinds-open {
+  from { --open: 0; opacity: 0; }
+  25% { opacity: 1; }
+  to { --open: 1; opacity: 1; }
 }
 @keyframes dc-blinds-breathe {
   from { opacity: 1; }
