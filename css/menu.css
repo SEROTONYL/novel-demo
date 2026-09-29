@@ -1,0 +1,91 @@
+@font-face {
+  font-family: 'Dela Gothic One';
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/dela-gothic-cyrillic-400.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Dela Gothic One';
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/dela-gothic-latin-400.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+.mn {
+  --cream: #e8e1d0;
+  --cold: #8fb4d9;
+  --pink: #c98f98;
+  --mf: 'Dela Gothic One', 'Oswald', Impact, sans-serif;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #000;
+  color: var(--cream);
+}
+.mn-stage {
+  position: relative;
+  width: min(100vw, calc(100dvh * 16 / 9));
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  container-type: inline-size;
+}
+.mn-scene { position: absolute; right: 0; top: 0; height: 100%; aspect-ratio: 2360 / 1640; z-index: 5; }
+.mn-scene img, .mn-hand img { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.mn-hands { position: absolute; inset: 0; pointer-events: none; }
+.mn-hand { position: absolute; top: 0; height: 100%; aspect-ratio: 2360 / 1640; }
+
+.mn-ui { position: absolute; left: 6cqw; top: 8cqw; z-index: 20; font-family: var(--mf); }
+.mn-title {
+  margin: 0 0 5cqw;
+  font-weight: 400;
+  font-size: calc(7.2cqw * .85);
+  line-height: .95;
+  text-transform: uppercase;
+  letter-spacing: .01em;
+  text-shadow: -.25cqw 0 var(--cold), .25cqw 0 var(--pink);
+}
+.mn-title span { display: block; text-shadow: none; }
+.mn-menu { display: grid; justify-content: start; gap: 1.4cqw; }
+.mn-btn {
+  font: inherit;
+  font-size: calc(2.6cqw * .85);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--cream);
+  cursor: pointer;
+  border: 0;
+  position: relative;
+  padding: .7cqw 4cqw .7cqw 2.2cqw;
+  min-width: 26cqw;
+  text-align: left;
+  background: rgba(8, 8, 12, .62);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 1.6cqw) 100%, 0 100%);
+}
+.mn-btn:hover, .mn-btn:focus-visible { background: var(--cream); color: #000; outline: 0; }
+
+.mn-back {
+  position: absolute; left: 6cqw; bottom: 9cqw; z-index: 30;
+  font: inherit; font-family: var(--mf); font-size: 1.5cqw;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--cream); opacity: .7; background: none; border: 0; cursor: pointer;
+  border-bottom: 1px solid currentColor; padding: 0 0 .2cqw;
+}
+.mn-back:hover, .mn-back:focus-visible { opacity: 1; outline: 0; }
+
+/* подсказка «поверни телефон» */
+.mn-rot {
+  position: fixed; inset: 0; z-index: 90; display: none;
+  flex-direction: column; align-items: center; justify-content: center; gap: 2.4rem;
+  background: rgba(8, 8, 12, .88); color: var(--cream);
+  font: 1.1rem/1.4 var(--mf); text-align: center; padding: 2rem;
+  opacity: 0; transition: opacity .4s;
+}
+.mn-rot.on { display: flex; }
+.mn-rot.vis { opacity: 1; }
+.mn-rot svg { width: 4.5rem; height: 4.5rem; animation: mn-tilt 2.4s ease-in-out infinite; }
+@keyframes mn-tilt { 0%, 15% { transform: rotate(0); } 55%, 100% { transform: rotate(-90deg); } }
+@media (prefers-reduced-motion: reduce) { .mn-rot svg { animation: none; transform: rotate(-90deg); } }

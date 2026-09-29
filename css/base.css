@@ -61,18 +61,3 @@ html, body {
 }
 #fade.on { opacity: 1; pointer-events: auto; }
 
-.splash {
-  height: 100%;
-  display: grid;
-  place-content: center;
-  gap: 1rem;
-  text-align: center;
-}
-.splash h2 {
-  margin: 0;
-  font-family: var(--display);
-  font-weight: 600;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-}
-.splash p { margin: 0; opacity: .5; }
