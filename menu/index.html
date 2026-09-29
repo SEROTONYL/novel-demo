@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Out of the Feed — шрифты и кнопки (черновик)</title>
+<link rel="stylesheet" href="fonts.css"><link rel="stylesheet" href="fonts2.css">
+<style>
+:root{--bg:#000;--cream:#e8e1d0;--cold:#8fb4d9;--pink:#c98f98;--f:'Oswald',sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:#0b0b0b;color:var(--cream);font:14px 'Inter',sans-serif}
+.bar{display:flex;flex-wrap:wrap;gap:6px 24px;padding:10px 16px;background:#161616;position:sticky;top:0;z-index:5}
+.bar b{opacity:.6;font-weight:400;margin-right:6px}
+.bar button{font:inherit;color:inherit;background:none;border:1px solid #444;padding:4px 10px;cursor:pointer;margin:2px}
+.bar button[aria-pressed=true]{background:var(--cream);color:#000;border-color:var(--cream)}
+.stage{position:relative;width:min(100vw,calc(100vh*16/9 - 60px));aspect-ratio:16/9;margin:0 auto;background:var(--bg);overflow:hidden;container-type:inline-size}
+.scene{position:absolute;right:0;top:0;height:100%;aspect-ratio:2360/1640;z-index:5}
+.hands{position:absolute;inset:0;pointer-events:none}
+.hand{position:absolute;top:0;height:100%;aspect-ratio:2360/1640}
+.hand img{position:absolute;inset:0;width:100%;height:100%}
+.scene img{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.seam{position:absolute;left:77.46%;width:1.44%;top:29.3%;bottom:0;background:linear-gradient(90deg,#7a7c8c,#464852);opacity:.9}
+.ui{position:absolute;left:6cqw;top:8cqw;z-index:20;font-family:var(--f)}
+h1{margin:0 0 5cqw;font-weight:inherit;font-size:calc(7.2cqw*var(--k,1));line-height:.95;text-transform:uppercase;letter-spacing:.01em;
+ text-shadow:-.25cqw 0 var(--cold),.25cqw 0 var(--pink)}
+h1 span{display:block;text-shadow:none}
+.menu{display:flex;flex-direction:column;align-items:flex-start;gap:1.4cqw}
+.btn{font:inherit;font-family:var(--fb,var(--f));font-size:calc(2.6cqw*var(--k,1));text-transform:uppercase;letter-spacing:.06em;color:var(--cream);background:none;border:0;cursor:pointer;padding:.7cqw 2.2cqw;position:relative}
+.slot{font:400 1.5cqw 'Inter',sans-serif;opacity:.55;margin-top:2cqw}
+@keyframes jit{0%{transform:translate(0)}25%{transform:translate(-.3cqw,.1cqw)}50%{transform:translate(.3cqw,-.1cqw)}75%{transform:translate(-.15cqw,0)}100%{transform:translate(0)}}
+/* A: рамка */
+.sA .btn{border:.2cqw solid var(--cream);min-width:24cqw;text-align:left}
+.sA .btn:hover,.sA .btn:focus-visible{background:var(--cream);color:#000;box-shadow:.5cqw .5cqw 0 var(--cold)}
+/* B: полоса слева */
+.sB .btn{padding-left:3cqw;text-align:left}
+.sB .btn::before{content:"";position:absolute;left:0;top:.5cqw;bottom:.5cqw;width:.35cqw;background:var(--cream);transform:scaleY(.25);transform-origin:top;transition:transform .15s}
+.sB .btn:hover::before,.sB .btn:focus-visible::before{transform:scaleY(1)}
+.sB .btn:hover,.sB .btn:focus-visible{text-shadow:-.2cqw 0 var(--cold),.2cqw 0 var(--pink);outline:0}
+/* C: скошенная плашка */
+.sC .menu{display:grid;justify-content:start}
+.sC .btn{background:rgba(8,8,12,.62);min-width:26cqw;text-align:left;clip-path:polygon(0 0,100% 0,calc(100% - 1.6cqw) 100%,0 100%);padding-right:4cqw}
+.sC .btn:hover,.sC .btn:focus-visible{background:var(--cream);color:#000;outline:0}
+@media (prefers-reduced-motion:reduce){.btn{animation:none!important}}
+.note{max-width:900px;margin:14px auto;padding:0 16px;opacity:.7}
+.rot{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;gap:2.4rem;background:rgba(8,8,12,.88);color:#e8e1d0;font:1.1rem/1.4 var(--f,sans-serif);text-align:center;padding:2rem;opacity:0;transition:opacity .4s}
+.rot.on{display:flex}.rot.vis{opacity:1}
+.rot svg{width:4.5rem;height:4.5rem;animation:tilt 2.4s ease-in-out infinite}
+@keyframes tilt{0%,15%{transform:rotate(0)}55%,100%{transform:rotate(-90deg)}}
+@media (prefers-reduced-motion:reduce){.rot svg{animation:none;transform:rotate(-90deg)}}
+html,body{height:100%}
+body:not(.dbg){display:flex;align-items:center;justify-content:center;overflow:hidden;background:#000;height:100dvh}
+body:not(.dbg) .stage{margin:0}
+.bar{display:none}
+body.dbg .bar{display:flex}
+body:not(.dbg) .stage{width:min(100vw,calc(100vh*16/9))}
+.back{position:absolute;left:6cqw;bottom:9cqw;z-index:30;font:inherit;font-family:var(--f);font-size:1.5cqw;letter-spacing:.06em;text-transform:uppercase;color:var(--cream);opacity:.7;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:.2cqw}
+.back:hover,.back:focus-visible{opacity:1;outline:0}
+</style></head><body>
+<script>if(location.search.includes("debug"))document.body.classList.add("dbg")</script>
+<div class="bar" id="bar"></div>
+<div class="stage sC" id="stage">
+ <div class="scene" id="scene">
+  <img src="scene/face-light.webp" alt=""><img src="scene/face-dark.webp" alt="">
+ </div>
+ <div class="hands" id="hands"></div>
+ <a class="back" href="https://serotonyl.github.io/novel-demo/">← К дисклеймеру</a>
+ <div class="ui" id="ui" style="--f:'Dela Gothic One'">
+  <h1>Out of<span>the Feed</span></h1>
+  <div class="menu"><button class="btn">Играть</button><button class="btn">Сохранения</button><button class="btn">Настройки</button></div>
+ </div>
+</div>
+<div class="rot" id="rot" role="alert"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg><div>Лучше играть, повернув телефон</div></div>
+<script>
+const fonts=[['Stalinist One','Stalinist One',400,.55],['Dela Gothic One','Dela Gothic One',400,.85],['Ruslan Display','Ruslan Display',400,1.2],['Rubik Glitch','Rubik Glitch (кнопки тоже)',400,.85],['Rubik Glitch|Dela Gothic One','Заголовок Rubik Glitch + кнопки Dela Gothic',400,.85]];
+const styles=[['sA','A · рамка'],['sB','B · полоса слева'],['sC','C · скос']];
+const bar=document.getElementById('bar'),st=document.getElementById('stage'),ui=document.getElementById('ui');
+function group(label,items,on){const d=document.createElement('div');d.innerHTML='<b>'+label+'</b>';
+ items.forEach((it,i)=>{const b=document.createElement('button');b.textContent=it[1];b.setAttribute('aria-pressed',i==(label=='Шрифт'?1:2));
+  b.onclick=()=>{[...d.querySelectorAll('button')].forEach(x=>x.setAttribute('aria-pressed',x===b));on(it)};d.appendChild(b)});bar.appendChild(d)}
+const Z={behind:1,front:10};
+fetch('scene.json').then(r=>r.json()).then(cfg=>{
+ const layer=document.getElementById('hands');const H={};
+ Object.entries(cfg.hands).forEach(([k,h],i)=>{
+  const d=document.createElement('div');d.className='hand';const im=document.createElement('img');im.src=h.src;im.alt='';d.appendChild(im);layer.appendChild(d);H[k]={h,d,order:i};apply(k)});
+ function apply(k){const {h,d,order}=H[k];d.style.left=h.anchor=='left'?0:'auto';d.style.right=h.anchor=='right'?0:'auto';
+  d.style.transformOrigin=h.pivot;d.style.transform=`translate(${h.x}%,${h.y}%) rotate(${h.angle}deg) scale(${h.scale})`;
+  d.style.zIndex=Z[h.layer]+order}
+ const sl=document.createElement('div');sl.innerHTML='<b>Рука</b>';
+ const sel=document.createElement('select');Object.entries(cfg.hands).forEach(([k,h])=>sel.add(new Option(h.label,k)));sl.appendChild(sel);
+ const rows={};
+ [['angle','угол',-90,90,1],['scale','масштаб',.5,1.6,.02],['x','X',-60,60,1],['y','Y',-60,60,1]].forEach(([p,n,mn,mx,st])=>{
+  const l=document.createElement('label');l.style.margin='0 8px';l.textContent=n+' ';const i=document.createElement('input');i.type='range';i.min=mn;i.max=mx;i.step=st;
+  i.oninput=()=>{H[sel.value].h[p]=+i.value;apply(sel.value);show()};rows[p]=i;l.appendChild(i);sl.appendChild(l)});
+ const ls=document.createElement('select');ls.add(new Option('перед портретом','front'));ls.add(new Option('за портретом','behind'));
+ ls.onchange=()=>{H[sel.value].h.layer=ls.value;apply(sel.value);show()};sl.appendChild(ls);
+ const out=document.createElement('span');out.style.cssText='opacity:.7;margin-left:8px';sl.appendChild(out);
+ function show(){const h=H[sel.value].h;['angle','scale','x','y'].forEach(p=>rows[p].value=h[p]);ls.value=h.layer;out.textContent=`${H[sel.value].h.label}: угол ${h.angle}° · масштаб ${h.scale} · X ${h.x}% · Y ${h.y}%`}
+ sel.onchange=show;show();bar.insertBefore(sl,bar.firstChild)});
+const fam=n=>"'"+n+"',sans-serif";
+function setFont(f){const p=f[0].split('|');ui.style.setProperty('--f',fam(p[0]));ui.style.setProperty('--fb',fam(p[p.length-1]));ui.style.setProperty('--k',f[3]);ui.style.fontWeight=f[2]}
+group('Шрифт',fonts,setFont);
+group('Кнопки',styles,s=>{st.className='stage '+s[0]});
+setFont(fonts[1]);
+
+// подсказка «поверни телефон»: только сенсорные устройства в портрете, 5 с, тап закрывает
+(()=>{const r=document.getElementById('rot'),pm=matchMedia('(orientation:portrait)'),touch=matchMedia('(pointer:coarse)');let t,h;
+ const hide=()=>{clearTimeout(t);r.classList.remove('vis');clearTimeout(h);h=setTimeout(()=>r.classList.remove('on'),400)};
+ const show=()=>{clearTimeout(h);r.classList.add('on');requestAnimationFrame(()=>r.classList.add('vis'));clearTimeout(t);t=setTimeout(hide,5000)};
+ const check=()=>pm.matches&&touch.matches&&innerWidth<900?show():hide();
+ pm.addEventListener('change',check);r.addEventListener('click',hide);check()})();
+</script></body></html>
