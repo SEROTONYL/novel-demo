@@ -83,7 +83,6 @@
   overflow: hidden;
   pointer-events: none;
   opacity: 0;
-  filter: blur(2.5px);
   /* перекладины рамы, мягкий правый край и низ */
   -webkit-mask-image:
     linear-gradient(to right, #000 0 24%, transparent 24% 27%, #000 27% 62%, transparent 62% 65%, #000 65% 100%),
@@ -101,11 +100,13 @@
   position: absolute;
   inset: -30% -10%;
   transform: skewY(-12deg);
-  mix-blend-mode: screen;
   background: repeating-linear-gradient(
     to bottom,
-    rgba(var(--light), .26) 0 calc(var(--pitch) * .64 * var(--open)),
-    transparent calc(var(--pitch) * .64 * var(--open)) var(--pitch)
+    rgba(var(--light), 0) 0,
+    rgba(var(--light), .26) .4rem,
+    rgba(var(--light), .26) calc(var(--pitch) * .64 * var(--open) - .4rem),
+    rgba(var(--light), 0) calc(var(--pitch) * .64 * var(--open)),
+    transparent var(--pitch)
   );
 }
 .dc-blinds::after {
@@ -113,12 +114,12 @@
   position: absolute;
   inset: -30% -10%;
   transform: skewY(-12deg);
-  mix-blend-mode: screen;
-  filter: blur(26px);
   background: repeating-linear-gradient(
     to bottom,
-    rgba(var(--bloom), .2) 0 calc(var(--pitch) * .7 * var(--open)),
-    transparent calc(var(--pitch) * .7 * var(--open)) var(--pitch)
+    rgba(var(--bloom), 0) 0,
+    rgba(var(--bloom), .2) calc(var(--pitch) * .35 * var(--open)),
+    rgba(var(--bloom), 0) calc(var(--pitch) * .7 * var(--open) + 1.2rem),
+    transparent var(--pitch)
   );
 }
 .dc[data-state='lit'] .dc-blinds { animation: dc-blinds-open 2.8s cubic-bezier(.35, .1, .25, 1) both, dc-blinds-breathe 9s ease-in-out 2.8s infinite alternate; }
@@ -134,8 +135,8 @@
   padding-top: 1.2rem;
   scrollbar-width: thin;
   scrollbar-color: #3a4658 transparent;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 2.2rem, #000 calc(100% - 1.4rem), transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0, #000 2.2rem, #000 calc(100% - 1.4rem), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 2.2rem, #000 calc(100% - .6rem), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 2.2rem, #000 calc(100% - .6rem), transparent 100%);
 }
 .dc-scroll:focus-visible { outline: none; }
 
@@ -247,15 +248,13 @@
 .dc-btn:hover:not(:disabled) { background: var(--text); color: #000; }
 .dc-btn:disabled { opacity: .3; cursor: not-allowed; }
 
-/* Подсказка про прокрутку */
+/* Подсказка про прокрутку: своя полоса под текстом, текст не перекрывает */
 .dc-hint {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: relative;
+  flex: none;
   z-index: 5;
-  padding: 1.6rem 0 max(.8rem, env(safe-area-inset-bottom));
-  background: linear-gradient(to bottom, transparent, var(--bg) 60%);
+  margin: 0;
+  padding: .5rem 0 max(.6rem, env(safe-area-inset-bottom));
   text-align: center;
   font-size: .8rem;
   letter-spacing: .16em;
