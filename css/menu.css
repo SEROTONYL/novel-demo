@@ -25,6 +25,10 @@
   overflow: hidden;
   background: #000;
   color: var(--cream);
+  /* без щипка и двойного тапа: при зуме iOS перерисовывает маски и blend-слои, картинки мигают */
+  touch-action: none;
+  -webkit-user-select: none; user-select: none;
+  -webkit-touch-callout: none;
 }
 .mn-stage {
   position: relative;
@@ -63,6 +67,13 @@
 }
 .mn-scene img, .mn-hand img { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .mn-hands { position: absolute; inset: 0; pointer-events: none; }
+
+/* Появление: сцена скрыта, пока все картинки не декодированы, потом лицо
+   проявляется из темноты, руки чуть позже. Только opacity, без filter. */
+.mn-scene, .mn-hands { opacity: 0; transition: opacity 2.4s cubic-bezier(.4, 0, .2, 1); }
+.mn-hands { transition-duration: 2s; transition-delay: .7s; }
+.mn-stage.is-ready .mn-scene, .mn-stage.is-ready .mn-hands { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .mn-scene, .mn-hands { transition-duration: .3s; transition-delay: 0s; } }
 .mn-hand { position: absolute; top: 0; height: 100%; aspect-ratio: 2360 / 1640; }
 
 .mn-ui { position: absolute; left: 6cqw; top: 8cqw; z-index: 20; font-family: var(--mf); }

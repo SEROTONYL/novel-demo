@@ -135,6 +135,17 @@ export function mount(root, { config, go }) {
 
   root.querySelector('.mn-back').addEventListener('click', () => go('disclaimer'));
 
+  // Старый iOS Safari игнорирует touch-action при щипке
+  const noPinch = (e) => e.preventDefault();
+  const mn = root.querySelector('.mn');
+  mn.addEventListener('gesturestart', noPinch);
+
+  // Показываем сцену, когда все картинки готовы, иначе они выскакивают по одной
+  const stage = root.querySelector('.mn-stage');
+  const decoded = (img) => (img.decode ? img.decode() : Promise.resolve()).catch(() => {});
+  const reveal = () => requestAnimationFrame(() => stage.classList.add('is-ready'));
+  const revealFallback = setTimeout(reveal, 5000);
+
   let alive = true;
   fetch('data/menu-scene.json', { cache: 'no-cache' })
     .then((r) => r.json())
@@ -165,7 +176,13 @@ export function mount(root, { config, go }) {
         layer.appendChild(d);
       });
     })
-    .catch(() => {});
+    .catch(() => {})
+    .then(() => Promise.all([...stage.querySelectorAll('.mn-scene > img, .mn-hand img')].map(decoded)))
+    .then(() => {
+      if (!alive) return;
+      clearTimeout(revealFallback);
+      reveal();
+    });
 
   dust(root.querySelector('.mn-dust'), 30);
   const stopHint = rotateHint(root);
@@ -173,6 +190,8 @@ export function mount(root, { config, go }) {
   const stopGlitch = glitches(root);
   return () => {
     alive = false;
+    clearTimeout(revealFallback);
+    mn.removeEventListener('gesturestart', noPinch);
     stopHint();
     stopFeed();
     stopGlitch();

@@ -58,6 +58,10 @@ export function mount(root, { ui, go }) {
   title.dataset.text = t.title;
   root.querySelector('.dc-sub').textContent = t.subtitle;
   lines.forEach((el, i) => el.style.setProperty('--i', i));
+  // iOS Safari держит строку на отдельном слое после анимации и может не перерисовать её
+  lines.forEach((el) => el.addEventListener('animationend', (e) => {
+    if (e.target === el) el.classList.add('is-in');
+  }));
 
   const timers = new Set();
   const later = (fn, ms) => {

@@ -269,6 +269,7 @@
 
 /* Появление строк: жалюзи раскрываются, свет добирается вниз */
 .dc-line { opacity: 0; }
+.dc-line.is-in { opacity: 1; animation: none !important; }
 .dc[data-state='lit'] .dc-line {
   animation: dc-in .9s ease-out both;
   animation-delay: calc(var(--i) * .24s + .5s);
@@ -309,8 +310,8 @@
   to { opacity: .8; }
 }
 @keyframes dc-in {
-  from { opacity: 0; filter: blur(6px) brightness(2.2); transform: translateY(6px); }
-  to { opacity: 1; filter: none; transform: none; }
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
 }
 @keyframes dc-bob {
   0%, 100% { transform: translateY(0); }
