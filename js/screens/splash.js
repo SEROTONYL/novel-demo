@@ -40,7 +40,7 @@ function rotateHint(root) {
 function feedLight(root) {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return () => {};
   const $ = (q) => root.querySelector(q);
-  const base = () => [$('.g-base'), ...root.querySelectorAll('.mn-hand-glow')];
+  const base = () => [$('.g-base'), $('.mn-dust'), ...root.querySelectorAll('.mn-hand-glow')];
   const timers = new Set();
   const later = (fn, ms) => {
     const id = setTimeout(() => { timers.delete(id); fn(); }, ms);
@@ -61,17 +61,69 @@ function feedLight(root) {
   return () => timers.forEach(clearTimeout);
 }
 
+// Пылинки в конусе света: случайное место, размер, скорость, снос вбок
+function dust(box, n) {
+  const r = (a, b) => a + Math.random() * (b - a);
+  for (let k = 0; k < n; k++) {
+    const p = document.createElement('i');
+    const t = r(8, 15);
+    p.style.cssText = `left:${r(58, 86)}%;top:${r(72, 100)}%;--s:${r(0.35, 1)}%;--t:${t}s;--d:${-r(0, t)}s;--dx:${r(-3, 3)}cqw;--o:${r(0.5, 1)}`;
+    box.appendChild(p);
+  }
+}
+
+// Глитч: частоты в секундах, [от, до]
+const GLITCH = { title: [6, 12], face: [12, 20] };
+
+function glitches(root) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return () => {};
+  const timers = new Set();
+  const later = (fn, ms) => {
+    const id = setTimeout(() => { timers.delete(id); fn(); }, ms);
+    timers.add(id);
+  };
+  const every = ([a, b], fn) => {
+    const run = () => { fn(); later(run, (a + Math.random() * (b - a)) * 1000); };
+    later(run, (a + Math.random() * (b - a)) * 1000);
+  };
+  const title = root.querySelector('.mn-title');
+  every(GLITCH.title, () => {
+    title.classList.add('is-glitch');
+    later(() => title.classList.remove('is-glitch'), 240);
+  });
+  // Портрет: 3 полосы лица съезжают вбок, одна — только тёмная половина,
+  // наползает на светлую. Два кадра по ~75 мс, свет экрана в этот миг проседает.
+  const stage = root.querySelector('.mn-stage');
+  const slices = [...root.querySelectorAll('.mn-slices > div')];
+  const r = (a, b) => a + Math.random() * (b - a);
+  const frame = () => slices.forEach((el, i) => {
+    const top = r(15, 80), h = r(3, 9);
+    el.style.clipPath = `inset(${top}% 0 ${100 - top - h}% 0)`;
+    el.classList.toggle('dark', i === 0);
+    el.style.transform = `translateX(${i === 0 ? -r(8, 14) : r(-2.5, 2.5)}%)`;
+  });
+  every(GLITCH.face, () => {
+    frame();
+    stage.classList.add('is-glitch');
+    later(frame, 75);
+    later(() => stage.classList.remove('is-glitch'), 150);
+  });
+  return () => timers.forEach(clearTimeout);
+}
+
 export function mount(root, { config, go }) {
   root.innerHTML = `
     <section class="mn">
       <div class="mn-stage">
         <div class="mn-scene"><img src="assets/menu/face-light.webp" alt=""><img src="assets/menu/face-dark.webp" alt="">
+          <div class="mn-slices" aria-hidden="true">${'<div><img src="assets/menu/face-light.webp" alt=""><img src="assets/menu/face-dark.webp" alt=""></div>'.repeat(3)}</div>
+          <div class="mn-dust" aria-hidden="true"></div>
           <div class="mn-glow" aria-hidden="true"><i class="g-shade"></i><i class="g-base"></i><i class="g-pink"></i><i class="g-flash"></i></div>
         </div>
         <div class="mn-hands"></div>
         <button class="mn-back" type="button">← К дисклеймеру</button>
         <div class="mn-ui">
-          <h1 class="mn-title">Out of<span>the Feed</span></h1>
+          <h1 class="mn-title" data-text="Out of&#10;the Feed">Out of<span>the Feed</span></h1>
           <div class="mn-menu">
             <button class="mn-btn" type="button">Играть</button>
             <button class="mn-btn" type="button">Сохранения</button>
@@ -89,9 +141,10 @@ export function mount(root, { config, go }) {
     .then((cfg) => {
       if (!alive) return;
       const layer = root.querySelector('.mn-hands');
-      Object.values(cfg.hands).forEach((h, i) => {
+      Object.entries(cfg.hands).forEach(([key, h], i) => {
         const d = document.createElement('div');
         d.className = 'mn-hand';
+        d.dataset.hand = key;
         d.style.left = h.anchor === 'left' ? '0' : 'auto';
         d.style.right = h.anchor === 'right' ? '0' : 'auto';
         d.style.transformOrigin = h.pivot;
@@ -114,11 +167,14 @@ export function mount(root, { config, go }) {
     })
     .catch(() => {});
 
+  dust(root.querySelector('.mn-dust'), 30);
   const stopHint = rotateHint(root);
   const stopFeed = feedLight(root);
+  const stopGlitch = glitches(root);
   return () => {
     alive = false;
     stopHint();
     stopFeed();
+    stopGlitch();
   };
 }

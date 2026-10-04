@@ -33,10 +33,29 @@
   overflow: hidden;
   container-type: inline-size;
 }
+/* Виньетка: края сцены темнее, взгляд на лице. Над сценой, под кнопками */
+.mn-stage::after {
+  content: ''; position: absolute; inset: 0; z-index: 16; pointer-events: none;
+  background: radial-gradient(ellipse 80% 90% at 62% 45%, transparent 50%, rgba(0, 0, 0, .65) 100%);
+}
+/* Зерно: SVG-шум, кадр меняется ~8 раз в секунду сдвигом текстуры */
+.mn-stage::before {
+  content: ''; position: absolute; inset: -50%; z-index: 40; pointer-events: none;
+  opacity: .07;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 2 0 0 0 -.6'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: mn-grain 1s steps(1) infinite;
+}
+@keyframes mn-grain {
+  0% { transform: translate(0, 0); } 12.5% { transform: translate(-5%, 3%); }
+  25% { transform: translate(4%, -6%); } 37.5% { transform: translate(-8%, -2%); }
+  50% { transform: translate(7%, 5%); } 62.5% { transform: translate(-3%, 8%); }
+  75% { transform: translate(6%, -4%); } 87.5% { transform: translate(-6%, -7%); }
+}
+@media (prefers-reduced-motion: reduce) { .mn-stage::before { animation: none; } }
 .mn-scene {
   position: absolute; right: 0; top: 0; height: 100%; aspect-ratio: 2360 / 1640; z-index: 5;
   /* лицо крупнее рук; растёт вверх от среза шеи */
-  transform: scale(1.15); transform-origin: 88% 95%;
+  transform: translateY(5%) scale(1.15); transform-origin: 88% 95%;
   /* капюшон обрезан краем арта: растворяем срез в чёрное
      (после scale видно примерно до 98% ширины холста) */
   -webkit-mask-image: linear-gradient(to left, transparent 2%, #000 9%);
@@ -57,6 +76,30 @@
   text-shadow: -.25cqw 0 var(--cold), .25cqw 0 var(--pink);
 }
 .mn-title span { display: block; text-shadow: none; }
+/* Глитч заголовка, как в дисклеймере: холодная и розовая копии рвутся полосами */
+.mn-title { position: relative; }
+.mn-title::before, .mn-title::after {
+  content: attr(data-text); white-space: pre-line;
+  position: absolute; inset: 0; opacity: 0; pointer-events: none; text-shadow: none;
+}
+.mn-title::before { color: var(--cold); }
+.mn-title::after { color: var(--pink); }
+.mn-title.is-glitch { animation: mn-shake .24s steps(2) both; }
+.mn-title.is-glitch::before { opacity: .95; animation: mn-slice-a .24s steps(2) both; }
+.mn-title.is-glitch::after { opacity: .95; animation: mn-slice-b .24s steps(2) both; }
+@keyframes mn-shake {
+  0% { transform: none; } 50% { transform: translateX(.25cqw) skewX(-5deg); } 100% { transform: translateX(-.15cqw); }
+}
+@keyframes mn-slice-a {
+  0% { clip-path: inset(10% 0 62% 0); transform: translateX(-.5cqw); }
+  50% { clip-path: inset(58% 0 12% 0); transform: translateX(.4cqw); }
+  100% { clip-path: inset(32% 0 40% 0); transform: translateX(-.25cqw); }
+}
+@keyframes mn-slice-b {
+  0% { clip-path: inset(60% 0 8% 0); transform: translateX(.5cqw); }
+  50% { clip-path: inset(15% 0 55% 0); transform: translateX(-.4cqw); }
+  100% { clip-path: inset(40% 0 30% 0); transform: translateX(.25cqw); }
+}
 .mn-menu { display: grid; justify-content: start; gap: 1.4cqw; }
 .mn-btn {
   font: inherit;
@@ -74,6 +117,14 @@
   clip-path: polygon(0 0, 100% 0, calc(100% - 1.6cqw) 100%, 0 100%);
 }
 .mn-btn:hover, .mn-btn:focus-visible { background: var(--cream); color: #000; outline: 0; }
+.mn-btn:hover, .mn-btn:focus-visible { animation: mn-btn-glitch .3s steps(1) both; }
+@keyframes mn-btn-glitch {
+  0%   { text-shadow: -.3cqw 0 var(--cold), .3cqw 0 var(--pink); transform: translateX(.2cqw); }
+  33%  { text-shadow: .25cqw 0 var(--cold), -.25cqw 0 var(--pink); transform: translateX(-.15cqw); }
+  66%  { text-shadow: -.12cqw 0 var(--cold), .12cqw 0 var(--pink); transform: none; }
+  100% { text-shadow: none; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .mn-btn:hover, .mn-btn:focus-visible { animation: none; } }
 
 .mn-back {
   position: absolute; left: 6cqw; bottom: 9cqw; z-index: 30;
@@ -124,6 +175,34 @@
   -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
   opacity: .8; transition: opacity 1.2s ease;
 }
+
+/* Пыль в свете экрана: видна только в конусе света под лицом */
+.mn-dust {
+  position: absolute; inset: 0; pointer-events: none; container-type: size;
+  opacity: .8; transition: opacity 1.2s ease;
+  -webkit-mask-image: radial-gradient(ellipse 28% 60% at 72% 96%, #000 45%, transparent 100%);
+  mask-image: radial-gradient(ellipse 28% 60% at 72% 96%, #000 45%, transparent 100%);
+}
+.mn-dust i {
+  position: absolute; width: var(--s); aspect-ratio: 1; border-radius: 50%; opacity: 0;
+  background: radial-gradient(rgba(215, 232, 255, .95), rgba(170, 205, 255, 0) 70%);
+  animation: mn-dust var(--t) linear var(--d) infinite;
+}
+@keyframes mn-dust {
+  0% { transform: translate(0, 0); opacity: 0; }
+  20% { opacity: var(--o); }
+  75% { opacity: calc(var(--o) * .7); }
+  100% { transform: translate(var(--dx), -38cqh); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .mn-dust i { animation: none; opacity: calc(var(--o) * .6); } }
+
+/* Глитч портрета: полосы-копии лица видны только в момент сбоя */
+.mn-slices { display: none; position: absolute; inset: 0; pointer-events: none; }
+.mn-slices > div { position: absolute; inset: 0; }
+.mn-slices > div.dark img:first-child { display: none; }
+.mn-stage.is-glitch .mn-slices { display: block; }
+.mn-stage.is-glitch .mn-glow .g-base { opacity: .15 !important; transition: none; }
+.mn-stage.is-glitch [data-hand='skeleton'] img { filter: brightness(1.7); }
 
 /* Дыхание рук: обёртка внутри руки, базовый поворот из menu-scene.json не трогаем */
 .mn-hand-in { position: absolute; inset: 0; }
